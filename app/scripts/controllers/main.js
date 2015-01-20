@@ -8,7 +8,7 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('MainCtrl',['$scope','$cookieStore', '$log', function ($scope,$cookieStore,$log) {
+  .controller('MainCtrl',['$scope','$cookieStore', '$log', '$http', function ($scope,$cookieStore,$log,$http) {
     var navFilePath = '';
 
     $scope.query = '';
@@ -32,9 +32,11 @@ angular.module('usbFileViewerApp')
     $scope.getFileListing = function(path){
       // replace mock with the http call to the REST API to receive the files
       $log.log(path);
-      var response = mockFileListing(path);
-      $scope.files = response.files;
-      $scope.currFilePath = response.currFilePath;
+      $http.jsonp('http://localhost:3000/fileListing?path=' + path).
+        success(function(data) {
+          $scope.files = data.files;
+      });
+      $scope.currFilePath = path;
 
       $cookieStore.put('files', $scope.files);
       $cookieStore.put('currFilePath', $scope.currFilePath);
@@ -53,7 +55,7 @@ angular.module('usbFileViewerApp')
     $scope.isAudioFile = function(filename){
       return filename.indexOf('.mp3') > -1;
     };
-
+/*
     var mockFileListing = function(path){
       if(path === '' || path === 'USB'){
         return {
@@ -85,4 +87,5 @@ angular.module('usbFileViewerApp')
         return {'files':{},'currFilePath':''};
       }
     };
+    */
   }]);
