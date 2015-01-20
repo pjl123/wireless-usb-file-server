@@ -31,18 +31,30 @@ angular.module('usbFileViewerApp')
 
     $scope.getFileListing = function(path){
       // replace mock with the http call to the REST API to receive the files
-      $log.log(path);
-      $http.jsonp('http://localhost:3000/fileListing?path=' + path).
+      $http.jsonp('http://localhost:3000/fileListing?callback=JSON_CALLBACK&path=' + path).
         success(function(data) {
           $scope.files = data.files;
-      });
-      $scope.currFilePath = path;
+          $scope.currFilePath = path;
 
-      $cookieStore.put('files', $scope.files);
-      $cookieStore.put('currFilePath', $scope.currFilePath);
+          $cookieStore.put('files', $scope.files);
+          $cookieStore.put('currFilePath', $scope.currFilePath);
+        }).
+        error(function(status,data) {
+          $log.log('Failed with status: ' + status + '\nData: ' + data);
+        });
+    };
+
+    $scope.getPathName = function(path){
+      if(path === ''){
+        return 'Root';
+      }
+      else{
+        return path;
+      }
     };
 
     $scope.getNavFilePath = function(ind,filePath){
+      $log.log('CurrFilePath: ' + $scope.currFilePath + '\nIndex: ' + ind + '\nPath: ' + filePath);
       if(ind === 0){
         navFilePath = filePath;
       }
