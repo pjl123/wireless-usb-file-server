@@ -1,0 +1,29 @@
+<h1>Wireless USB HTTP Server</h1>
+
+<!--
+<div ng-show="currFilePath === ''">
+  <input type="submit" class="btn btn-default" ng-click="getFileListing('')" value="Get File Listing">
+</div>
+-->
+
+<div>
+  <ul class="nav nav-pills pull-left">
+    <li ng-repeat="path in currFilePath.split('/')"><a href="" ng-click="getFileListing(getNavFilePath($index,path))">{{getPathName(path)}} ></a></li>
+  </ul>
+  <br/>
+  <div class="table-responsive">
+    <table class="table">
+      <tr>
+        <th><a href="" ng-click="category='filename';reverse=!reverse">Filename</a></th>
+        <th><a href="" ng-click="category='size';reverse=!reverse">Size</a></th>
+        <th></th>
+      </tr>
+      <tr ng-repeat="f in files | filter:query | orderBy:category:reverse">
+        <td ng-show="f.isDirectory"><a href="" ng-click="getFileListing(currFilePath + '/' + f.filename)">{{f.filename}}</a></td>
+        <td ng-hide="f.isDirectory">{{f.filename}}</td>
+        <td>{{f.size}}</td>
+        <td><a href="#/audio" ng-show="isAudioFile(f.filename)" ng-click="setAudioPath(currFilePath + '/' + f.filename)">Play File</a></td>
+      </tr>
+    </table>
+  </div>
+</div>

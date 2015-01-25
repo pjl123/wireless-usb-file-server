@@ -11,7 +11,7 @@ angular.module('usbFileViewerApp')
   .controller('AudioCtrl', ['$scope','$http','$cookieStore','$log','$sce', function ($scope, $http, $cookieStore,$log,$sce) {
   	var serverPath = 'C:/Users/Patrick.pat-PC/Documents/School/Senior Design/wireless-usb-file-server/temp_files';
 
-    $scope.audioSource = 'test';
+    $scope.getAudioFile();
 
     $scope.getAudioFile = function(){
     	$log.log('Sending request for ' + $cookieStore.get('audioPath'));
