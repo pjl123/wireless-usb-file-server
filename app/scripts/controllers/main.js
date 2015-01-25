@@ -31,7 +31,7 @@ angular.module('usbFileViewerApp')
 
     $scope.getFileListing = function(path){
       // replace mock with the http call to the REST API to receive the files
-      $http.jsonp('http://localhost:3000/fileListing?callback=JSON_CALLBACK&path=' + path).
+      $http.jsonp('http://localhost:3000/fileListing?callback=JSON_CALLBACK&accessToken=foo&path=' + path).
         success(function(data) {
           $scope.files = data.files;
           $scope.currFilePath = path;
@@ -66,6 +66,10 @@ angular.module('usbFileViewerApp')
 
     $scope.isAudioFile = function(filename){
       return filename.indexOf('.mp3') > -1;
+    };
+
+    $scope.setAudioPath = function(path){
+      $cookieStore.put('audioPath',path);
     };
 /*
     var mockFileListing = function(path){
