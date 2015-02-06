@@ -10,6 +10,7 @@
 angular.module('usbFileViewerApp')
   .controller('MainCtrl',['$scope','$cookieStore', '$log', '$http', function ($scope,$cookieStore,$log,$http) {
     var navFilePath = '';
+    var apiServerAddress = 'http://192.168.1.36:3000';
 
     var mobilecheck = function() {
       var check = false;
@@ -42,7 +43,7 @@ angular.module('usbFileViewerApp')
 
     $scope.getFileListing = function(path){
       // replace mock with the http call to the REST API to receive the files
-      $http.jsonp('http://localhost:3000/fileListing?callback=JSON_CALLBACK&accessToken=foo&path=' + path).
+      $http.jsonp(apiServerAddress + '/fileListing?callback=JSON_CALLBACK&accessToken=foo&path=' + path).
         success(function(data) {
           $scope.files = data.files;
           $scope.currFilePath = path;
