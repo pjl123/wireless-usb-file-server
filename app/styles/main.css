@@ -77,3 +77,9 @@ body {
     border-bottom: 0;
   }
 }
+
+/* Clickable table rows */
+
+tr.row-clicked {
+  background: #00f;
+}
