@@ -19,6 +19,8 @@
         <th></th>
       </tr>
       <tr ng-repeat="f in files | filter:query | orderBy:category:reverse" ng-click="processFile(f)">
+        <td ng-show="f.isDirectory"><img src="images/folder.png"></td>
+        <td ng-hide="f.isDirectory"><img src="images/file.png"></td>
         <td>{{f.filename}}</td>
         <td>{{f.size}}</td>
       </tr>

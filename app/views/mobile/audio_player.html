@@ -1,0 +1,14 @@
+
+<ul class="nav nav-pills pull-left">
+    <li><a href="#/main/mobile">Back to File Browse></a></li>
+</ul>
+
+<input ng-show = "!fileSetUp" type="submit" class="btn btn-default" ng-click="getAudioFile()" value="Setup File Stream">
+
+<div ng-bind-html = "audioSource">
+</div>
+<!--
+<audio controls>
+	<source ng-src="{{audioSource}}" type="audio/mpeg">
+Your browser does not support the audio element.
+</audio> -->

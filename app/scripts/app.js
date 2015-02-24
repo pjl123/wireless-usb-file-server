@@ -34,6 +34,10 @@ angular
         templateUrl: 'views/audio_player.html',
         controller: 'AudioCtrl'
       })
+      .when('/audio/mobile', {
+        templateUrl: 'views/mobile/audio_player.html',
+        controller: 'AudioCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

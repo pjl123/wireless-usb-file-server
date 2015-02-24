@@ -18,10 +18,12 @@
       <th></th>
     </tr>
     <tr ng-repeat="f in files | filter:query | orderBy:category:reverse">
-      <td ng-show="f.isDirectory"><a href="" ng-click="getFileListing(currFilePath + '/' + f.filename)">{{f.filename}}</a></td>
+      <td ng-show="f.isDirectory"><img src="images/folder.png"></td>
+      <td ng-show="f.isDirectory"><a href="" ng-click="processFile(f)">{{f.filename}}</a></td>
+      <td ng-hide="f.isDirectory"><img src="images/file.png"></td>
       <td ng-hide="f.isDirectory">{{f.filename}}</td>
       <td>{{f.size}}</td>
-      <td><a href="#/audio" ng-show="isAudioFile(f.filename)" ng-click="setAudioPath(currFilePath + '/' + f.filename)">Play File</a></td>
+      <td><a href="" ng-show="isAudioFile(f)" ng-click="processFile(f)">Play File</a></td>
     </tr>
   </table>
 </div>

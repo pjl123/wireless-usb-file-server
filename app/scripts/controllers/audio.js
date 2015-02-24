@@ -8,25 +8,34 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('AudioCtrl', ['$scope','$http','$cookieStore','$log','$sce', function ($scope, $http, $cookieStore,$log,$sce) {
-  	var serverPath = 'C:/Users/Patrick.pat-PC/Documents/School/Senior Design/wireless-usb-file-server/temp_files';
+  .controller('AudioCtrl', ['$scope', '$rootScope','$http','$cookieStore','$log','$sce', function ($scope, $rootScope, $http, $cookieStore,$log,$sce) {
+  	//var serverPath = 'C:/Users/Patrick.pat-PC/Documents/School/Senior Design/wireless-usb-web-server/temp_files';
+  	var serverPath = 'http://192.168.1.146:8282/';
 
-    $scope.getAudioFile();
+/*
+    if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){
+    	$log.log($rootScope);
+      window.location = window.location.href + 'mobile';
+    }*/
+
+  	$scope.fileSetUp = false;
 
     $scope.getAudioFile = function(){
     	$log.log('Sending request for ' + $cookieStore.get('audioPath'));
-  		$http.jsonp('http://localhost:3000/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&path=' + $cookieStore.get('audioPath')).
+  		$http.jsonp('http://192.168.1.146:3000/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&path=' + $cookieStore.get('audioPath')).
 			  success(function(data) {
 			  	var path = serverPath + '/' + data.filename;
-			  	/*
-			  	$scope.audioSource = '<audio controls>\n' +
-			  													'<source src="' + path + '" type="audio/mpeg">\n' +
+			  	//var temp = path.split('.');
+			  	//var fileType = temp[temp.length - 1];
+			  	
+			  	$scope.audioSource = $sce.trustAsHtml('<audio src="' + path + '" controls>\n' +
 																'Your browser does not support the audio element.\n' +
-																'</audio>';*/
+																'</audio>');
 
-					$scope.audioSource = $sce.trustAsResourceUrl(path);
+					//$scope.audioSource = $sce.trustAsResourceUrl(path);
 			  	
 			  	$log.log('Ready for streaming.');
+			  	$scope.fileSetUp = true;
 			  }).
 			  error(function(status,data) {
 			    $log.log('Failed with status: ' + status + '\nData: ' + data);
