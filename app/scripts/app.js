@@ -38,6 +38,14 @@ angular
         templateUrl: 'views/mobile/audio_player.html',
         controller: 'AudioCtrl'
       })
+      .when('/video', {
+        templateUrl: 'views/video_player.html',
+        controller: 'VideoCtrl'
+      })
+      .when('/video/mobile', {
+        templateUrl: 'views/mobile/video_player.html',
+        controller: 'VideoCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

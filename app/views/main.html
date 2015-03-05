@@ -24,7 +24,10 @@
       <td ng-hide="f.isDirectory"><img src="images/file.png"></td>
       <td ng-hide="f.isDirectory">{{f.filename}}</td>
       <td>{{f.size}}</td>
-      <td><a href="" ng-show="isAudioFile(f)" ng-click="processFile(f)">Play File</a></td>
+      <td>
+        <a href="" ng-show="isAudioFile(f)" ng-click="processFile(f)">Play File</a>
+        <a href="" ng-show="isVideoFile(f)" ng-click="processFile(f)">Play File</a>
+      </td>
     </tr>
   </table>
 </div>

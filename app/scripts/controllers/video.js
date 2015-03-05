@@ -8,12 +8,38 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('VideoCtrl', ['$scope', function ($scope) {
-    $scope.video = {};
+  .controller('VideoCtrl', ['$scope', '$rootScope','$http','$cookieStore','$log','$sce', function ($scope, $rootScope, $http, $cookieStore,$log,$sce) {
+  	//var serverPath = 'C:/Users/Patrick.pat-PC/Documents/School/Senior Design/wireless-usb-web-server/temp_files';
+  	var serverPath = 'http://192.168.1.250:8282/';
 
-    /*
-    $scope.getVideoFile = function(path){
-    	// TODO implement retrieving video file
+/*
+    if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){
+    	$log.log($rootScope);
+      window.location = window.location.href + 'mobile';
+    }*/
+
+  	$scope.fileSetUp = false;
+
+    $scope.getVideoFile = function(){
+    	$log.log('Sending request for ' + $cookieStore.get('videoPath'));
+  		$http.jsonp('http://192.168.1.250:3000/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&path=' + $cookieStore.get('videoPath')).
+			  success(function(data) {
+			  	var path = serverPath + '/' + data.filename;
+			  	//var temp = path.split('.');
+			  	//var fileType = temp[temp.length - 1];
+			  	
+			  	$scope.videoSource = $sce.trustAsHtml('<video controls>\n' +
+			  												'<source src="' + path + '"\n' +
+																'Your browser does not support the video element.\n' +
+																'</video>');
+
+					//$scope.audioSource = $sce.trustAsResourceUrl(path);
+			  	
+			  	$log.log('Ready for streaming.');
+			  	$scope.fileSetUp = true;
+			  }).
+			  error(function(status,data) {
+			    $log.log('Failed with status: ' + status + '\nData: ' + data);
+			  });
     };
-    */
   }]);

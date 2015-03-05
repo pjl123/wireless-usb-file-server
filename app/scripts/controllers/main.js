@@ -10,7 +10,7 @@
 angular.module('usbFileViewerApp')
   .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', function ($scope,$rootScope,$cookieStore,$log,$http) {
     var navFilePath = '';
-    var apiServerAddress = 'http://192.168.1.146:3000';
+    var apiServerAddress = 'http://192.168.1.250:3000';
 
     var mobilecheck = function () {
       var check = false;
@@ -74,8 +74,16 @@ angular.module('usbFileViewerApp')
       return (file.filename.indexOf('.mp3') > -1 || file.filename.indexOf('.wav') > -1);
     };
 
+    $scope.isVideoFile = function (file){
+      return (file.filename.indexOf('.mp4') > -1 || file.filename.indexOf('.wmv') > -1);
+    };
+
     $scope.setAudioPath = function (path){
       $cookieStore.put('audioPath',path);
+    };
+
+    $scope.setVideoPath = function (path){
+      $cookieStore.put('videoPath',path);
     };
 
     $scope.processFile = function (file){
@@ -84,8 +92,14 @@ angular.module('usbFileViewerApp')
       }
       else if($scope.isAudioFile(file)){
         $scope.setAudioPath(file.filename);
-        var audioSite = $rootScope.isMobile ? 'http://192.168.1.146:9000/#/audio/mobile' : 'http://192.168.1.146:9000/#/audio';
+        var audioSite = $rootScope.isMobile ? 'http://192.168.1.250:9000/#/audio/mobile' : 'http://192.168.1.250:9000/#/audio';
         window.location.href = audioSite;
+        $log.log(window.location);
+      }
+      else if($scope.isVideoFile(file)){
+        $scope.setVideoPath(file.filename);
+        var videoSite = $rootScope.isMobile ? 'http://192.168.1.250:9000/#/video/mobile' : 'http://192.168.1.250:9000/#/video';
+        window.location.href = videoSite;
         $log.log(window.location);
       }
     };
