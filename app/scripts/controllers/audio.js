@@ -10,7 +10,6 @@
 angular.module('usbFileViewerApp')
   .controller('AudioCtrl', ['$scope', '$rootScope','$http','$cookieStore','$log','$sce', function ($scope, $rootScope, $http, $cookieStore,$log,$sce) {
   	//var serverPath = 'C:/Users/Patrick.pat-PC/Documents/School/Senior Design/wireless-usb-web-server/temp_files';
-  	var serverPath = 'http://192.168.1.250:8282/';
 
 /*
     if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){
@@ -22,9 +21,9 @@ angular.module('usbFileViewerApp')
 
     $scope.getAudioFile = function(){
     	$log.log('Sending request for ' + $cookieStore.get('audioPath'));
-  		$http.jsonp('http://192.168.1.250:3000/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&path=' + $cookieStore.get('audioPath')).
+  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&path=' + $cookieStore.get('audioPath')).
 			  success(function(data) {
-			  	var path = serverPath + '/' + data.filename;
+			  	var path = $cookieStore.get('httpPath') + '/' + data.filename;
 			  	//var temp = path.split('.');
 			  	//var fileType = temp[temp.length - 1];
 			  	

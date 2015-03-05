@@ -10,7 +10,10 @@
 angular.module('usbFileViewerApp')
   .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', function ($scope,$rootScope,$cookieStore,$log,$http) {
     var navFilePath = '';
-    var apiServerAddress = 'http://192.168.1.250:3000';
+    // Store the server paths for use across all modules
+    $cookieStore.put('selfPath','http://192.168.1.250:9000');
+    $cookieStore.put('httpPath','http://192.168.1.250:8282');
+    $cookieStore.put('apiPath','http://192.168.1.250:3000');
 
     var mobilecheck = function () {
       var check = false;
@@ -35,7 +38,7 @@ angular.module('usbFileViewerApp')
     }
 
     $scope.getFileListing = function (path){
-      $http.jsonp(apiServerAddress + '/fileListing?callback=JSON_CALLBACK&accessToken=foo&path=' + path).
+      $http.jsonp($cookieStore.get('apiPath') + '/fileListing?callback=JSON_CALLBACK&accessToken=foo&path=' + path).
         success(function (data) {
           $scope.files = data.files;
           $scope.currFilePath = path;
@@ -92,13 +95,13 @@ angular.module('usbFileViewerApp')
       }
       else if($scope.isAudioFile(file)){
         $scope.setAudioPath(file.filename);
-        var audioSite = $rootScope.isMobile ? 'http://192.168.1.250:9000/#/audio/mobile' : 'http://192.168.1.250:9000/#/audio';
+        var audioSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/audio/mobile' : $cookieStore.get('selfPath') + '/#/audio';
         window.location.href = audioSite;
         $log.log(window.location);
       }
       else if($scope.isVideoFile(file)){
         $scope.setVideoPath(file.filename);
-        var videoSite = $rootScope.isMobile ? 'http://192.168.1.250:9000/#/video/mobile' : 'http://192.168.1.250:9000/#/video';
+        var videoSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/video/mobile' : $cookieStore.get('selfPath') + '/#/video';
         window.location.href = videoSite;
         $log.log(window.location);
       }
