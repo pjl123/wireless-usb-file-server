@@ -94,13 +94,13 @@ angular.module('usbFileViewerApp')
         $scope.getFileListing($scope.currFilePath + '/' + file.filename);
       }
       else if($scope.isAudioFile(file)){
-        $scope.setAudioPath(file.filename);
+        $scope.setAudioPath($scope.currFilePath + '/' + file.filename);
         var audioSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/audio/mobile' : $cookieStore.get('selfPath') + '/#/audio';
         window.location.href = audioSite;
         $log.log(window.location);
       }
       else if($scope.isVideoFile(file)){
-        $scope.setVideoPath(file.filename);
+        $scope.setVideoPath($scope.currFilePath + '/' + file.filename);
         var videoSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/video/mobile' : $cookieStore.get('selfPath') + '/#/video';
         window.location.href = videoSite;
         $log.log(window.location);
