@@ -55,7 +55,7 @@ angular.module('usbFileViewerApp')
 
     $scope.getPathName = function (path){
       if(path === ''){
-        return 'Root';
+        return 'USBs';
       }
       else{
         return path;
