@@ -20,8 +20,8 @@ angular.module('usbFileViewerApp')
   	$scope.fileSetUp = false;
 
     $scope.getAudioFile = function(){
-    	$log.log('Sending request for ' + $cookieStore.get('audioPath'));
-  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&path=' + $cookieStore.get('audioPath')).
+    	$log.log('Sending request for ' + $cookieStore.get('audioId'));
+  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&fileId=' + $cookieStore.get('audioId')).
 			  success(function(data) {
 			  	var path = $cookieStore.get('httpPath') + '/' + data.filename;
 			  	//var temp = path.split('.');

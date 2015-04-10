@@ -11,9 +11,9 @@ angular.module('usbFileViewerApp')
   .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', function ($scope,$rootScope,$cookieStore,$log,$http) {
     var navFilePath = '';
     // Store the server paths for use across all modules
-    $cookieStore.put('selfPath','http://192.168.1.250:9000');
-    $cookieStore.put('httpPath','http://192.168.1.250:8282');
-    $cookieStore.put('apiPath','http://192.168.1.250:3000');
+    $cookieStore.put('selfPath','http://192.168.1.146:9000');
+    $cookieStore.put('httpPath','http://192.168.1.146:8282');
+    $cookieStore.put('apiPath','http://192.168.1.146:3000');
 
     var mobilecheck = function () {
       var check = false;
@@ -27,23 +27,41 @@ angular.module('usbFileViewerApp')
     }
 
     $scope.query = '';
-    $scope.category = 'filename';
+    $scope.category = 'filepath';
     $scope.reverse = false;
 
-    if($cookieStore.get('currFilePath') === undefined){
-      $scope.currFilePath = '';
-    }
-    else{
-      $scope.currFilePath = $cookieStore.get('currFilePath');
+    $scope.currParentIds = $cookieStore.get('currParentIds');
+    if($scope.currParentIds === undefined){
+      $scope.currParentIds = [];
     }
 
-    $scope.getFileListing = function (path){
-      $http.jsonp($cookieStore.get('apiPath') + '/fileListing?callback=JSON_CALLBACK&accessToken=foo&path=' + path).
+    $scope.currFileId = $cookieStore.get('currFileId');
+    if($scope.currFileId === undefined){
+      $scope.currFileId = '';
+    }
+
+    $scope.getFileListing = function (fileId){
+      $http.jsonp($cookieStore.get('apiPath') + '/fileListing?callback=JSON_CALLBACK&accessToken=foo&fileId=' + fileId).
         success(function (data) {
           $scope.files = data.files;
-          $scope.currFilePath = path;
-
-          $cookieStore.put('currFilePath', $scope.currFilePath);
+          for (var i = 0; i < $scope.files.length; i++) {
+            var temp = $scope.files[i].filepath.split('/');
+            $scope.files[i].filename = temp[temp.length - 1];
+          }
+          if($scope.currFileId !== fileId){
+            var numParents = $scope.currParentIds.length;
+            $log.log(fileId);
+            if(($scope.currFileId === '') || (numParents > 0 && $scope.currParentIds[numParents - 1] !== fileId)){
+              $scope.currParentIds.push($scope.currFileId);
+            }
+            else{
+              $scope.currParentIds.pop();
+            }
+            $scope.currFileId = fileId;
+            $log.log('currParentIds: ' + $scope.currParentIds + '\ncurrFileId: ' + $scope.currFileId);
+            $cookieStore.put('currParentIds', $scope.currParentIds);
+            $cookieStore.put('currFileId', $scope.currFileId);
+          }
         }).
         error(function (status,data) {
           $log.log('Failed with status: ' + status + '\nData: ' + data);
@@ -51,7 +69,7 @@ angular.module('usbFileViewerApp')
     };
 
     $scope.files = {};
-    $scope.getFileListing($scope.currFilePath);
+    $scope.getFileListing($scope.currFileId);
 
     $scope.getPathName = function (path){
       if(path === ''){
@@ -66,7 +84,7 @@ angular.module('usbFileViewerApp')
       if(ind === 0){
         navFilePath = filePath;
       }
-      else if(navFilePath.split('/').length !== $scope.currFilePath.split('/').length){
+      else if(navFilePath.split('/').length !== $scope.currFileId.split('/').length){
         $log.log('navFilePath: ' + navFilePath + '\nIndex: ' + ind + '\nPath: ' + filePath);
         navFilePath += '/' + filePath;
       }
@@ -74,33 +92,33 @@ angular.module('usbFileViewerApp')
     };
 
     $scope.isAudioFile = function (file){
-      return (file.filename.indexOf('.mp3') > -1 || file.filename.indexOf('.wav') > -1);
+      return (file.filepath.indexOf('.mp3') > -1 || file.filepath.indexOf('.wav') > -1);
     };
 
     $scope.isVideoFile = function (file){
-      return (file.filename.indexOf('.mp4') > -1 || file.filename.indexOf('.wmv') > -1);
+      return (file.filepath.indexOf('.mp4') > -1 || file.filepath.indexOf('.wmv') > -1);
     };
 
-    $scope.setAudioPath = function (path){
-      $cookieStore.put('audioPath',path);
+    $scope.setAudioFileId = function (fileId){
+      $cookieStore.put('audioId',fileId);
     };
 
-    $scope.setVideoPath = function (path){
-      $cookieStore.put('videoPath',path);
+    $scope.setVideoFileId = function (fileId){
+      $cookieStore.put('videoId',fileId);
     };
 
     $scope.processFile = function (file){
       if(file.isDirectory){
-        $scope.getFileListing($scope.currFilePath + '/' + file.filename);
+        $scope.getFileListing(file._id);
       }
       else if($scope.isAudioFile(file)){
-        $scope.setAudioPath($scope.currFilePath + '/' + file.filename);
+        $scope.setAudioFileId(file._id);
         var audioSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/audio/mobile' : $cookieStore.get('selfPath') + '/#/audio';
         window.location.href = audioSite;
         $log.log(window.location);
       }
       else if($scope.isVideoFile(file)){
-        $scope.setVideoPath($scope.currFilePath + '/' + file.filename);
+        $scope.setVideoFileId(file._id);
         var videoSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/video/mobile' : $cookieStore.get('selfPath') + '/#/video';
         window.location.href = videoSite;
         $log.log(window.location);
