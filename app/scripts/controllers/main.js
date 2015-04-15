@@ -35,7 +35,7 @@ angular.module('usbFileViewerApp')
 
     $scope.userId = $cookieStore.get('userId');
     if($scope.userId === undefined){
-      $scope.userId = '552e8b56dba3738c103ede8e';
+      $scope.userId = '552ea5dac6ef4a5c19b242b1';
     }
 
     $scope.accessToken = $cookieStore.get('accessToken');
@@ -81,6 +81,8 @@ angular.module('usbFileViewerApp')
           $log.log('Failed with status: ' + status + '\nData: ' + data);
         });
     };
+
+    $scope.getGroups($scope.userId,$scope.accessToken);
 
     $scope.getFiles = function (group, accessToken){
       $http.jsonp($cookieStore.get('apiPath') + '/filesByGroup/' + group._id + '?callback=JSON_CALLBACK&accessToken=' + accessToken).
