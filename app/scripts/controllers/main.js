@@ -11,9 +11,9 @@ angular.module('usbFileViewerApp')
   .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', function ($scope,$rootScope,$cookieStore,$log,$http) {
     var navFilePath = '';
     // Store the server paths for use across all modules
-    $cookieStore.put('selfPath','http://192.168.1.146:9000');
-    $cookieStore.put('httpPath','http://192.168.1.146:8282');
-    $cookieStore.put('apiPath','http://192.168.1.146:3000');
+    $cookieStore.put('selfPath','https://192.168.1.146:9000');
+    $cookieStore.put('httpPath','https://192.168.1.146:8282');
+    $cookieStore.put('apiPath','https://192.168.1.146:3000');
 
     var mobilecheck = function () {
       var check = false;
@@ -26,50 +26,78 @@ angular.module('usbFileViewerApp')
       window.location = window.location.href + 'mobile';
     }
 
+    $scope.groupQuery = '';
+    $scope.groupReverse = false;
+
     $scope.query = '';
     $scope.category = 'filepath';
     $scope.reverse = false;
 
-    $scope.currParentIds = $cookieStore.get('currParentIds');
-    if($scope.currParentIds === undefined){
-      $scope.currParentIds = [];
+    $scope.userId = $cookieStore.get('userId');
+    if($scope.userId === undefined){
+      $scope.userId = '552e8b56dba3738c103ede8e';
     }
 
-    $scope.currFileId = $cookieStore.get('currFileId');
-    if($scope.currFileId === undefined){
-      $scope.currFileId = '';
+    $scope.accessToken = $cookieStore.get('accessToken');
+    if($scope.accessToken === undefined){
+      $scope.accessToken = 'web';
     }
 
-    $scope.getFileListing = function (fileId){
-      $http.jsonp($cookieStore.get('apiPath') + '/fileListing?callback=JSON_CALLBACK&accessToken=foo&fileId=' + fileId).
+    $scope.groups = [];
+    $scope.files = [];
+    $scope.currentGroup = {};
+    $scope.currentDirectory = {};
+    $scope.currentFiles = [];
+
+    var findFiles = function (directory){
+      $scope.currentFiles = [];
+      var dirId = directory._id;
+      if(dirId === undefined){
+        dirId = null;
+      }
+      for (var i = 0; i < $scope.files.length; i++) {
+        if($scope.files[i].parentDirectory === dirId){
+          $scope.currentFiles.push($scope.files[i]);
+        }
+      }
+      $log.log($scope.currentFiles);
+    };
+
+    $scope.getPaths = function (directory){
+      if(directory.filepath === undefined){
+        return [''];
+      }
+      else{
+        return directory.filepath.split('/');
+      }
+    };
+
+    $scope.getGroups = function (userId, accessToken){
+      $http.jsonp($cookieStore.get('apiPath') + '/groupsByUser/' + userId + '?callback=JSON_CALLBACK&accessToken=' + accessToken).
         success(function (data) {
-          $scope.files = data.files;
-          for (var i = 0; i < $scope.files.length; i++) {
-            var temp = $scope.files[i].filepath.split('/');
-            $scope.files[i].filename = temp[temp.length - 1];
-          }
-          if($scope.currFileId !== fileId){
-            var numParents = $scope.currParentIds.length;
-            $log.log(fileId);
-            if(($scope.currFileId === '') || (numParents > 0 && $scope.currParentIds[numParents - 1] !== fileId)){
-              $scope.currParentIds.push($scope.currFileId);
-            }
-            else{
-              $scope.currParentIds.pop();
-            }
-            $scope.currFileId = fileId;
-            $log.log('currParentIds: ' + $scope.currParentIds + '\ncurrFileId: ' + $scope.currFileId);
-            $cookieStore.put('currParentIds', $scope.currParentIds);
-            $cookieStore.put('currFileId', $scope.currFileId);
-          }
+          $scope.groups = data.groups;
         }).
         error(function (status,data) {
           $log.log('Failed with status: ' + status + '\nData: ' + data);
         });
     };
 
-    $scope.files = {};
-    $scope.getFileListing($scope.currFileId);
+    $scope.getFiles = function (group, accessToken){
+      $http.jsonp($cookieStore.get('apiPath') + '/filesByGroup/' + group._id + '?callback=JSON_CALLBACK&accessToken=' + accessToken).
+        success(function (data) {
+          $scope.files = data.files;
+          for (var i = 0; i < $scope.files.length; i++) {
+            var temp = $scope.files[i].filepath.split('/');
+            $scope.files[i].filename = temp[temp.length - 1];
+          }
+          $scope.currentGroup = group;
+          $scope.currentDirectory = {};
+          findFiles($scope.currentDirectory);
+        }).
+        error(function (status,data) {
+          $log.log('Failed with status: ' + status + '\nData: ' + data);
+        });
+    };
 
     $scope.getPathName = function (path){
       if(path === ''){
@@ -80,15 +108,25 @@ angular.module('usbFileViewerApp')
       }
     };
 
-    $scope.getNavFilePath = function (ind,filePath){
-      if(ind === 0){
-        navFilePath = filePath;
+    $scope.getNavFile = function (ind){
+      var paths = $scope.getPaths($scope.currentDirectory);
+      navFilePath = '';
+      for (var i = 0; i <= ind; i++) {
+        if(i > 0){
+          navFilePath += '/';
+        }
+        navFilePath += paths[i];
       }
-      else if(navFilePath.split('/').length !== $scope.currFileId.split('/').length){
-        $log.log('navFilePath: ' + navFilePath + '\nIndex: ' + ind + '\nPath: ' + filePath);
-        navFilePath += '/' + filePath;
+      var returnDir = {};
+      for (var j = 0; j < $scope.files.length; j++) {
+        if($scope.files[j].filepath === navFilePath){
+          returnDir = $scope.files[j];
+          break;
+        }
       }
-      return navFilePath;
+      $log.log('navFilePath: ' + navFilePath + '\nIndex: ' + ind);
+      $log.log('Return directory: ' + returnDir.filepath);
+      return returnDir;
     };
 
     $scope.isAudioFile = function (file){
@@ -108,8 +146,9 @@ angular.module('usbFileViewerApp')
     };
 
     $scope.processFile = function (file){
-      if(file.isDirectory){
-        $scope.getFileListing(file._id);
+      if(file.isDirectory || file.isDirectory === undefined){
+        $scope.currentDirectory = file;
+        findFiles($scope.currentDirectory);
       }
       else if($scope.isAudioFile(file)){
         $scope.setAudioFileId(file._id);
