@@ -1,11 +1,10 @@
 <a href="#/main">Back to File Browse</a>
 
-<input ng-show = "!fileSetUp" type="submit" class="btn btn-default" ng-click="getVideoFile()" value="Setup File Stream">
-
-<div ng-bind-html = "videoSource">
+<div ng-show="errorGettingFile">
+	<h1>Error With File</h1>
+	<p>{{error}}</p>
+	<input type="submit" class="btn btn-default" ng-click="getVideoFile()" value="Try Again">
 </div>
-<!--
-<audio controls>
-	<source ng-src="{{audioSource}}" type="audio/mpeg">
-Your browser does not support the audio element.
-</audio> -->
+
+<div ng-hide="errorGettingFile" ng-bind-html = "videoSource">
+</div>

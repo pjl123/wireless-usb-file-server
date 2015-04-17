@@ -11,8 +11,8 @@ angular.module('usbFileViewerApp')
   .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', function ($scope,$rootScope,$cookieStore,$log,$http) {
     var navFilePath = '';
     // Store the server paths for use across all modules
-    $cookieStore.put('selfPath','https://192.168.1.146:9000');
-    $cookieStore.put('httpPath','https://192.168.1.146:8282');
+    $cookieStore.put('selfPath','http://192.168.1.146:9000');
+    $cookieStore.put('httpPath','http://192.168.1.146:8282');
     $cookieStore.put('apiPath','https://192.168.1.146:3000');
 
     var mobilecheck = function () {
@@ -36,11 +36,7 @@ angular.module('usbFileViewerApp')
     $scope.userId = $cookieStore.get('userId');
     if($scope.userId === undefined){
       $scope.userId = '552ea5dac6ef4a5c19b242b1';
-    }
-
-    $scope.accessToken = $cookieStore.get('accessToken');
-    if($scope.accessToken === undefined){
-      $scope.accessToken = 'web';
+      $cookieStore.put('userId',$scope.userId);
     }
 
     $scope.groups = [];
@@ -72,8 +68,9 @@ angular.module('usbFileViewerApp')
       }
     };
 
-    $scope.getGroups = function (userId, accessToken){
-      $http.jsonp($cookieStore.get('apiPath') + '/groupsByUser/' + userId + '?callback=JSON_CALLBACK&accessToken=' + accessToken).
+    // TODO damn jsonp requests don't let you set headers...
+    $scope.getGroups = function (userId){
+      $http.jsonp($cookieStore.get('apiPath') + '/groupsByUser/' + userId + '?callback=JSON_CALLBACK&userId=' + userId).
         success(function (data) {
           $scope.groups = data.groups;
         }).
@@ -82,10 +79,10 @@ angular.module('usbFileViewerApp')
         });
     };
 
-    $scope.getGroups($scope.userId,$scope.accessToken);
+    $scope.getGroups($scope.userId);
 
-    $scope.getFiles = function (group, accessToken){
-      $http.jsonp($cookieStore.get('apiPath') + '/filesByGroup/' + group._id + '?callback=JSON_CALLBACK&accessToken=' + accessToken).
+    $scope.getFiles = function (group, userId){
+      $http.jsonp($cookieStore.get('apiPath') + '/filesByGroup/' + group._id + '?callback=JSON_CALLBACK&userId=' + userId).
         success(function (data) {
           $scope.files = data.files;
           for (var i = 0; i < $scope.files.length; i++) {
@@ -141,10 +138,12 @@ angular.module('usbFileViewerApp')
 
     $scope.setAudioFileId = function (fileId){
       $cookieStore.put('audioId',fileId);
+      $cookieStore.put('groupId',$scope.currentGroup._id);
     };
 
     $scope.setVideoFileId = function (fileId){
       $cookieStore.put('videoId',fileId);
+      $cookieStore.put('groupId',$scope.currentGroup._id);
     };
 
     $scope.processFile = function (file){

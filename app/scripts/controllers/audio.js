@@ -9,35 +9,30 @@
  */
 angular.module('usbFileViewerApp')
   .controller('AudioCtrl', ['$scope', '$rootScope','$http','$cookieStore','$log','$sce', function ($scope, $rootScope, $http, $cookieStore,$log,$sce) {
-  	//var serverPath = 'C:/Users/Patrick.pat-PC/Documents/School/Senior Design/wireless-usb-web-server/temp_files';
 
-/*
-    if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){
-    	$log.log($rootScope);
-      window.location = window.location.href + 'mobile';
-    }*/
-
-  	$scope.fileSetUp = false;
+  	$scope.errorGettingFile = false;
+  	$scope.error = {};
 
     $scope.getAudioFile = function(){
     	$log.log('Sending request for ' + $cookieStore.get('audioId'));
-  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream?callback=JSON_CALLBACK&accessToken=foo&fileId=' + $cookieStore.get('audioId')).
+  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream/' + $cookieStore.get('audioId') +
+  					 '?callback=JSON_CALLBACK&userId=' + $cookieStore.get('userId') + '&groupId=' + $cookieStore.get('groupId')).
 			  success(function(data) {
 			  	var path = $cookieStore.get('httpPath') + '/' + data.filename;
-			  	//var temp = path.split('.');
-			  	//var fileType = temp[temp.length - 1];
 			  	
 			  	$scope.audioSource = $sce.trustAsHtml('<audio src="' + path + '" controls>\n' +
 																'Your browser does not support the audio element.\n' +
 																'</audio>');
-
-					//$scope.audioSource = $sce.trustAsResourceUrl(path);
 			  	
 			  	$log.log('Ready for streaming.');
 			  	$scope.fileSetUp = true;
 			  }).
-			  error(function(status,data) {
+			  error(function(data, status) {
 			    $log.log('Failed with status: ' + status + '\nData: ' + data);
+			   	$scope.errorGettingFile = true;
+			    $scope.error = data;
 			  });
     };
+
+    $scope.getAudioFile();
   }]);
