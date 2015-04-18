@@ -8,7 +8,7 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', function ($scope,$rootScope,$cookieStore,$log,$http) {
+  .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', '$routeParams', function ($scope,$rootScope,$cookieStore,$log,$http,$routeParams) {
     var navFilePath = '';
     // Store the server paths for use across all modules
     $cookieStore.put('selfPath','http://192.168.1.146:9000');
@@ -33,11 +33,17 @@ angular.module('usbFileViewerApp')
     $scope.category = 'filepath';
     $scope.reverse = false;
 
-    $scope.userId = $cookieStore.get('userId');
-    if($scope.userId === undefined){
-      $scope.userId = '552ea5dac6ef4a5c19b242b1';
-      $cookieStore.put('userId',$scope.userId);
+    if($routeParams.userId === undefined){
+      $scope.userId = $cookieStore.get('userId');
+      if($scope.userId === undefined){
+        // Hard coded web user id
+        $scope.userId = '552ea5dac6ef4a5c19b242b1';
+      }
     }
+    else{
+      $scope.userId = $routeParams.userId;
+    }
+    $cookieStore.put('userId',$scope.userId);
 
     $scope.groups = [];
     $scope.files = [];

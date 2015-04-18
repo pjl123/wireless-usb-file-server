@@ -18,7 +18,7 @@ angular
   ])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/:userId?', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
