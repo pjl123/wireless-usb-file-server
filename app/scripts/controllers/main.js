@@ -21,19 +21,24 @@ angular.module('usbFileViewerApp')
       return check;
     };
     $rootScope.isMobile = mobilecheck();
+    $log.log(window.location.href);
+    // if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){
+    //   if(window.location.href.indexOf('#/') !== -1){
+    //     window.location = window.location.href + 'mobile';
+    //   }
+    //   else{
+    //     window.location = window.location.href + '#/mobile'; 
+    //   }
+    // }
 
-    if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){
-      window.location = window.location.href + 'mobile';
-    }
-
-    $scope.groupQuery = '';
+    $scope.groupQuery = ''; 
     $scope.groupReverse = false;
 
     $scope.query = '';
     $scope.category = 'filepath';
     $scope.reverse = false;
 
-    if($routeParams.userId === undefined){
+    if($routeParams.userId === undefined || $routeParams.userId === 'mobile'){
       $scope.userId = $cookieStore.get('userId');
       if($scope.userId === undefined){
         // Hard coded web user id

@@ -18,11 +18,11 @@ angular
   ])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/:userId?', {
+      .when('/main/:userId?', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/mobile',{
+      .when('/mobile/main/:userId?',{
         templateUrl: 'views/mobile/main.html',
         controller: 'MainCtrl'
       })
@@ -34,7 +34,7 @@ angular
         templateUrl: 'views/audio_player.html',
         controller: 'AudioCtrl'
       })
-      .when('/audio/mobile', {
+      .when('/mobile/audio', {
         templateUrl: 'views/mobile/audio_player.html',
         controller: 'AudioCtrl'
       })
@@ -42,11 +42,11 @@ angular
         templateUrl: 'views/video_player.html',
         controller: 'VideoCtrl'
       })
-      .when('/video/mobile', {
+      .when('/mobile/video', {
         templateUrl: 'views/mobile/video_player.html',
         controller: 'VideoCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/main'
       });
   });
