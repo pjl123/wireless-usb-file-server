@@ -8,12 +8,12 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('MainCtrl',['$scope','$rootScope','$cookieStore', '$log', '$http', '$routeParams', function ($scope,$rootScope,$cookieStore,$log,$http,$routeParams) {
+  .controller('MainCtrl',['$scope','$rootScope', '$log', '$http', '$routeParams', function ($scope,$rootScope,$log,$http,$routeParams) {
     var navFilePath = '';
     // Store the server paths for use across all modules
-    $cookieStore.put('selfPath','http://192.168.1.250:9000');
-    $cookieStore.put('httpPath','http://192.168.1.250:8282');
-    $cookieStore.put('apiPath','https://192.168.1.250:3000');
+    $rootScope.selfPath = 'http://192.168.1.250:9000';
+    $rootScope.httpPath = 'http://192.168.1.250:8282';
+    $rootScope.apiPath = 'https://192.168.1.250:3000';
 
     var mobilecheck = function () {
       var check = false;
@@ -28,8 +28,8 @@ angular.module('usbFileViewerApp')
     $scope.category = 'filepath';
     $scope.reverse = false;
 
-    if($routeParams.userId === undefined || $routeParams.userId === 'mobile'){
-      $scope.userId = $cookieStore.get('userId');
+    if($routeParams.userId === undefined){
+      $scope.userId = $rootScope.userId;
       if($scope.userId === undefined){
         // Hard coded web user id
         $scope.userId = '552ea5dac6ef4a5c19b242b1';
@@ -38,7 +38,7 @@ angular.module('usbFileViewerApp')
     else{
       $scope.userId = $routeParams.userId;
     }
-    $cookieStore.put('userId',$scope.userId);
+    $rootScope.userId = $scope.userId;
 
     $scope.groups = [];
     $scope.files = [];
@@ -49,7 +49,7 @@ angular.module('usbFileViewerApp')
     $rootScope.isMobile = mobilecheck();
     $log.log(window.location.href);
     if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){ 
-      window.location = $cookieStore.get('selfPath') + '/#/mobile/main';
+      window.location = $rootScope.selfPath + '/#/mobile/main';
     }
 
     var findFiles = function (directory){
@@ -77,7 +77,7 @@ angular.module('usbFileViewerApp')
 
     // TODO damn jsonp requests don't let you set headers...
     $scope.getGroups = function (userId){
-      $http.jsonp($cookieStore.get('apiPath') + '/groupsByUser/' + userId + '?callback=JSON_CALLBACK&userId=' + userId).
+      $http.jsonp($rootScope.apiPath + '/groupsByUser/' + userId + '?callback=JSON_CALLBACK&userId=' + userId).
         success(function (data) {
           $scope.groups = data.groups;
         }).
@@ -89,7 +89,7 @@ angular.module('usbFileViewerApp')
     $scope.getGroups($scope.userId);
 
     $scope.getFiles = function (group, userId){
-      $http.jsonp($cookieStore.get('apiPath') + '/filesByGroup/' + group._id + '?callback=JSON_CALLBACK&userId=' + userId).
+      $http.jsonp($rootScope.apiPath + '/filesByGroup/' + group._id + '?callback=JSON_CALLBACK&userId=' + userId).
         success(function (data) {
           $scope.files = data.files;
           for (var i = 0; i < $scope.files.length; i++) {
@@ -144,13 +144,13 @@ angular.module('usbFileViewerApp')
     };
 
     $scope.setAudioFileId = function (fileId){
-      $cookieStore.put('audioId',fileId);
-      $cookieStore.put('groupId',$scope.currentGroup._id);
+      $rootScope.audioId = fileId;
+      $rootScope.groupId = $scope.currentGroup._id;
     };
 
     $scope.setVideoFileId = function (fileId){
-      $cookieStore.put('videoId',fileId);
-      $cookieStore.put('groupId',$scope.currentGroup._id);
+      $rootScope.videoId = fileId;
+      $rootScope.groupId = $scope.currentGroup._id;
     };
 
     $scope.processFile = function (file){
@@ -160,13 +160,13 @@ angular.module('usbFileViewerApp')
       }
       else if($scope.isAudioFile(file)){
         $scope.setAudioFileId(file._id);
-        var audioSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/mobile/audio' : $cookieStore.get('selfPath') + '/#/audio';
+        var audioSite = $rootScope.isMobile ? $rootScope.selfPath + '/#/mobile/audio' : $rootScope.selfPath + '/#/audio';
         window.location.href = audioSite;
         $log.log(window.location);
       }
       else if($scope.isVideoFile(file)){
         $scope.setVideoFileId(file._id);
-        var videoSite = $rootScope.isMobile ? $cookieStore.get('selfPath') + '/#/mobile/video' : $cookieStore.get('selfPath') + '/#/video';
+        var videoSite = $rootScope.isMobile ? $rootScope.selfPath + '/#/mobile/video' : $rootScope.selfPath + '/#/video';
         window.location.href = videoSite;
         $log.log(window.location);
       }

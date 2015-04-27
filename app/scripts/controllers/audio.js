@@ -8,17 +8,17 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('AudioCtrl', ['$scope', '$rootScope','$http','$cookieStore','$log','$sce', function ($scope, $rootScope, $http, $cookieStore,$log,$sce) {
+  .controller('AudioCtrl', ['$scope', '$rootScope','$http','$log','$sce', function ($scope, $rootScope, $http,$log,$sce) {
 
   	$scope.errorGettingFile = false;
   	$scope.error = {};
 
     $scope.getAudioFile = function(){
-    	$log.log('Sending request for ' + $cookieStore.get('audioId'));
-  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream/' + $cookieStore.get('audioId') +
-  					 '?callback=JSON_CALLBACK&userId=' + $cookieStore.get('userId') + '&groupId=' + $cookieStore.get('groupId')).
+    	$log.log('Sending request for ' + $rootScope.audioId);
+  		$http.jsonp($rootScope.apiPath + '/setupWebStream/' + $rootScope.audioId +
+  					 '?callback=JSON_CALLBACK&userId=' + $rootScope.userId + '&groupId=' + $rootScope.groupId).
 			  success(function(data) {
-			  	var path = $cookieStore.get('httpPath') + '/' + data.filename;
+			  	var path = $rootScope.httpPath + '/' + data.filename;
 			  	
 			  	$scope.audioSource = $sce.trustAsHtml('<audio src="' + path + '" controls>\n' +
 																'Your browser does not support the audio element.\n' +

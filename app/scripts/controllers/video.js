@@ -8,18 +8,17 @@
  * Controller of the usbFileViewerApp
  */
 angular.module('usbFileViewerApp')
-  .controller('VideoCtrl', ['$scope', '$rootScope','$http','$cookieStore','$log','$sce', function ($scope, $rootScope, $http, $cookieStore,$log,$sce) {
-
+  .controller('VideoCtrl', ['$scope', '$rootScope','$http','$log','$sce', function ($scope, $rootScope, $http,$log,$sce) {
 
   	$scope.errorGettingFile = false;
   	$scope.error = {};
 
     $scope.getVideoFile = function(){
-    	$log.log('Sending request for ' + $cookieStore.get('videoId'));
-  		$http.jsonp($cookieStore.get('apiPath') + '/setupWebStream/' + $cookieStore.get('videoId') +
-  					 '?callback=JSON_CALLBACK&userId=' + $cookieStore.get('userId') + '&groupId=' + $cookieStore.get('groupId')).
+    	$log.log('Sending request for ' + $rootScope.videoId);
+  		$http.jsonp($rootScope.apiPath + '/setupWebStream/' + $rootScope.videoId +
+  					 '?callback=JSON_CALLBACK&userId=' + $rootScope.userId + '&groupId=' + $rootScope.groupId).
 			  success(function(data) {
-			  	var path = $cookieStore.get('httpPath') + '/' + data.filename;
+			  	var path = $rootScope.httpPath + '/' + data.filename;
 			  	
 			  	$scope.videoSource = $sce.trustAsHtml('<video controls>\n' +
 			  												'<source src="' + path + '"\n' +
