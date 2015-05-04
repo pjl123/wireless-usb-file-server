@@ -19,6 +19,7 @@ angular.module('usbFileViewerApp')
   					 '?callback=JSON_CALLBACK&userId=' + $rootScope.userId + '&groupId=' + $rootScope.groupId).
 			  success(function(data) {
 			  	var path = $rootScope.httpPath + '/' + data.filename;
+			  	$log.log(path);
 			  	
 			  	$scope.videoSource = $sce.trustAsHtml('<video controls>\n' +
 			  												'<source src="' + path + '"\n' +

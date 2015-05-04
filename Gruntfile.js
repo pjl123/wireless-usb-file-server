@@ -29,7 +29,7 @@ module.exports = function (grunt) {
         'dev': {
  
             // the server root directory 
-            root: './app/audio',
+            root: './app/content',
  
             // the server port 
             // can also be written as a function, e.g. 
