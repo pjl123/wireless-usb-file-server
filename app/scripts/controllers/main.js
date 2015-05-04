@@ -49,7 +49,7 @@ angular.module('usbFileViewerApp')
     $rootScope.isMobile = mobilecheck();
     $log.log(window.location.href);
     if($rootScope.isMobile && window.location.href.indexOf('mobile') === -1){ 
-      window.location = $rootScope.selfPath + '/#/mobile/main';
+      window.location = $rootScope.selfPath + '/#/mobile/main/' + $scope.userId;
     }
 
     var findFiles = function (directory){

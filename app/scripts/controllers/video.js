@@ -10,6 +10,7 @@
 angular.module('usbFileViewerApp')
   .controller('VideoCtrl', ['$scope', '$rootScope','$http','$log','$sce', function ($scope, $rootScope, $http,$log,$sce) {
 
+  	$scope.userId = $rootScope.userId;
   	$scope.errorGettingFile = false;
   	$scope.error = {};
 
