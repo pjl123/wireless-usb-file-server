@@ -1,0 +1,13 @@
+
+<ul class="nav nav-pills pull-left">
+    <li><a href="#/mobile/main/{{userId}}">Back to File Browse></a></li>
+</ul>
+
+<div ng-show="errorGettingFile">
+	<h1>Error With File</h1>
+	<p>{{error}}</p>
+	<input type="submit" class="btn btn-default" ng-click="getFile()" value="Try Again">
+</div>
+
+<div ng-hide="errorGettingFile" ng-bind-html = "fileIFrame">
+</div>

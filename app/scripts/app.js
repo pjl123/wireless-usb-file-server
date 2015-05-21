@@ -46,6 +46,14 @@ angular
         templateUrl: 'views/mobile/video_player.html',
         controller: 'VideoCtrl'
       })
+      .when('/preview', {
+        templateUrl: 'views/file_viewer.html',
+        controller: 'FileCtrl'
+      })
+      .when('/mobile/preview', {
+        templateUrl: 'views/mobile/file_viewer.html',
+        controller: 'FileCtrl'
+      })
       .otherwise({
         redirectTo: '/main'
       });

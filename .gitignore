@@ -3,5 +3,6 @@ dist
 .tmp
 .sass-cache
 bower_components
-app/content
+app/content/*
+!app/content/ViewerJS
 npm-debug.log

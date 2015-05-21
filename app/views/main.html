@@ -37,6 +37,7 @@
       <td>
         <a href="" ng-show="isAudioFile(f)" ng-click="processFile(f)">Play File</a>
         <a href="" ng-show="isVideoFile(f)" ng-click="processFile(f)">Play File</a>
+        <a href="" ng-hide="f.isDirectory || isAudioFile(f) || isVideoFile(f)" ng-click="processFile(f)">Preview</a>
       </td>
     </tr>
   </table>
